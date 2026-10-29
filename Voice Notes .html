@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#E45B4A">
+<title>Voice Notes &amp; Recorder</title>
+<style>
+:root{--p:#E45B4A;--s:#FF8A65;--bg:#FFF9F6;--cd:#fff;--t:#292524;--m:#78716C;--ln:#f1e5df;--sh:0 4px 16px rgba(120,60,40,.09)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--t);overflow:hidden;padding-top:env(safe-area-inset-top)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea{font:inherit;color:var(--t)}
+h1,h2,h3{margin:0}
+#app{height:100%;display:flex;flex-direction:column}
+main{flex:1;min-height:0}
+.scr{display:none;height:100%;overflow-y:auto;padding:16px}
+.scr.on{display:block}
+nav{display:flex;background:var(--cd);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0;font-size:12px;color:var(--m);min-height:56px}
+nav button.on{color:var(--p);font-weight:700}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.lgo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;display:flex;align-items:center;justify-content:center}
+.hd{font-size:29px;line-height:1.12;font-weight:800;letter-spacing:-.5px;margin:18px 0 14px}
+h2{font-size:17px;margin:22px 0 10px}
+.card{background:var(--cd);border-radius:22px;box-shadow:var(--sh);padding:16px}
+.panel{text-align:center;padding:18px 14px 16px}
+#tm{font-size:46px;font-weight:300;letter-spacing:1px;font-variant-numeric:tabular-nums}
+#wv{width:100%;height:84px;display:block;margin:6px 0 12px}
+#st{color:var(--m);font-size:13px;min-height:19px;margin-top:10px}
+.ctl{display:flex;align-items:center;justify-content:center;gap:26px}
+.rb{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(228,91,74,.42);transition:transform .15s}
+.rb:active{transform:scale(.94)}
+.rb.on{animation:pu 1.6s infinite}
+.sb{width:54px;height:54px;border-radius:50%;background:var(--bg);border:1px solid var(--ln);display:flex;align-items:center;justify-content:center}
+.sb:disabled{opacity:.35}
+@keyframes pu{50%{box-shadow:0 8px 22px rgba(228,91,74,.42),0 0 0 14px rgba(228,91,74,.14)}}
+.srch{display:flex;align-items:center;gap:8px;background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:0 14px;min-height:48px;color:var(--m)}
+.srch input{flex:1;border:0;outline:0;background:none;min-height:46px;min-width:0}
+.qa{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qa button{background:var(--cd);box-shadow:var(--sh);border-radius:18px;padding:14px 4px;font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--t)}
+.qa svg{color:var(--p)}
+.rc{background:var(--cd);box-shadow:var(--sh);border-radius:20px;padding:12px;margin-bottom:12px}
+.rt{display:flex;align-items:center;gap:12px}
+.pp{width:46px;height:46px;border-radius:50%;background:var(--p);color:#fff;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.rm{flex:1;min-width:0}
+.rm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm small,.nc small{color:var(--m);font-size:12px}
+.pg{height:5px;border-radius:5px;background:var(--ln);margin:10px 0 6px;overflow:hidden}
+.pg i{display:block;height:100%;width:0;background:var(--p)}
+.ra{display:flex;gap:4px;justify-content:space-between}
+.ra button{min-width:44px;min-height:40px;border-radius:12px;font-weight:700;font-size:13px;color:var(--m);display:flex;align-items:center;justify-content:center}
+.ra .fv.on,.ib.on{color:var(--p)}
+.ra .fv.on svg{fill:var(--p)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px}
+.chip{flex:0 0 auto;min-height:38px;padding:0 15px;border-radius:999px;background:var(--cd);border:1px solid var(--ln);font-size:13px;font-weight:600;color:var(--m)}
+.chip.on{background:var(--p);border-color:var(--p);color:#fff}
+.nc{background:var(--cd);box-shadow:var(--sh);border-radius:18px;padding:14px;margin-bottom:12px;width:100%;text-align:left;display:block}
+.nc b{display:flex;gap:6px;align-items:center}
+.nc p{margin:4px 0 6px;color:var(--m);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}
+.fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;box-shadow:0 8px 20px rgba(228,91,74,.4);display:flex;align-items:center;justify-content:center;z-index:5}
+.emp{text-align:center;color:var(--m);padding:26px 12px}
+.emp svg{color:var(--s);margin-bottom:6px}
+.set{margin-bottom:12px}
+.set p{margin:4px 0;color:var(--m);font-size:13px}
+.pri,.sec{min-height:48px;border-radius:14px;font-weight:700;padding:0 18px}
+.pri{background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
+.sec{background:var(--bg);border:1px solid var(--ln)}
+.dng{color:#c0392b}
+.two{display:flex;gap:10px}.two>*{flex:1}
+.mod{position:fixed;inset:0;background:rgba(41,37,36,.5);display:flex;align-items:flex-end;z-index:30}
+.mod>div{background:var(--cd);width:100%;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));animation:sl .28s cubic-bezier(.2,.9,.3,1);max-height:92%;overflow-y:auto}
+@keyframes sl{from{transform:translateY(100%)}}
+.in{width:100%;min-height:48px;border:1px solid var(--ln);border-radius:14px;padding:0 14px;background:var(--bg);margin:10px 0}
+#ne{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.eb{display:flex;align-items:center;gap:2px;padding:6px 8px;border-bottom:1px solid var(--ln);background:var(--cd)}
+.ib{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--m)}
+#nt{border:0;outline:0;background:none;font-size:22px;font-weight:700;padding:14px 16px 4px;width:100%}
+#nb{flex:1;border:0;outline:0;background:none;resize:none;padding:8px 16px;line-height:1.55;font-size:16px;width:100%}
+.ef{padding:8px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--ln);font-size:12px;color:var(--m);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--cd)}
+.ef input{border:1px solid var(--ln);border-radius:10px;padding:6px;background:var(--bg);min-height:36px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,20px);background:#292524;color:#fff;padding:11px 18px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90%;text-align:center;font-size:14px}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:linear-gradient(165deg,#D94A3A,var(--p) 45%,var(--s));color:#fff;transition:opacity .5s,visibility .5s;text-align:center;padding:20px}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+.sl{width:104px;height:104px;border-radius:30px;background:#fff;color:var(--p);display:flex;align-items:center;justify-content:center;animation:pop .9s cubic-bezier(.2,1.3,.4,1) both;box-shadow:0 14px 34px rgba(0,0,0,.2)}
+.bars{display:flex;gap:6px;align-items:center;height:40px;margin-top:6px}
+.bars i{width:6px;border-radius:6px;background:#fff;height:12px;animation:bn 1s ease-in-out infinite}
+.bars i:nth-child(2){animation-delay:.12s}.bars i:nth-child(3){animation-delay:.24s}.bars i:nth-child(4){animation-delay:.36s}.bars i:nth-child(5){animation-delay:.48s}.bars i:nth-child(6){animation-delay:.6s}.bars i:nth-child(7){animation-delay:.72s}
+#splash h1{font-size:30px;letter-spacing:-.5px;animation:up .7s .2s both}
+#splash p{margin:0;opacity:.9;animation:up .7s .35s both}
+.pb{width:170px;height:5px;border-radius:5px;background:rgba(255,255,255,.3);overflow:hidden;margin-top:14px}
+.pb i{display:block;height:100%;width:0;background:#fff;animation:ld 1.9s ease-out forwards}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+@keyframes up{from{transform:translateY(14px);opacity:0}}
+@keyframes bn{50%{height:38px}}
+@keyframes ld{to{width:100%}}
+@media(prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important}.rb.on{animation:none}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <div class="sl"><span data-i="mic" data-s="52"></span></div>
+  <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <h1>Voice Notes &amp; Recorder</h1>
+  <p>Capture every important moment</p>
+  <div class="pb"><i></i></div>
+</div>
+
+<div id="app">
+<main>
+<section id="s-home" class="scr on">
+  <div class="brand"><span class="lgo" data-i="mic"></span>Voice Notes</div>
+  <h1 class="hd">Capture every important moment</h1>
+  <div class="card panel">
+    <div id="tm">00:00</div>
+    <canvas id="wv"></canvas>
+    <div class="ctl">
+      <button class="sb" id="bp" data-i="pause" aria-label="Pause" disabled></button>
+      <button class="rb" id="br" aria-label="Record"></button>
+      <button class="sb" id="bd" data-i="trash" aria-label="Discard recording" disabled></button>
+    </div>
+    <div id="st">Tap the red button to start recording</div>
+  </div>
+  <div class="srch" style="margin-top:16px"><span data-i="search"></span><input id="hs" type="search" placeholder="Search recordings and notes"></div>
+  <h2>Quick actions</h2>
+  <div class="qa">
+    <button id="qr"><span data-i="mic"></span>Record Audio</button>
+    <button id="qn"><span data-i="note"></span>Write Note</button>
+    <button id="qb"><span data-i="bars"></span>Browse Recordings</button>
+  </div>
+  <h2 id="hh">Recent recordings</h2>
+  <div id="hl"></div>
+  <div id="hn"></div>
+  <div class="card set" id="stor" style="margin-top:18px"></div>
+</section>
+
+<section id="s-rec" class="scr">
+  <h1 style="font-size:24px;margin-bottom:12px">Recordings</h1>
+  <div class="srch"><span data-i="search"></span><input id="rs" type="search" placeholder="Search by title"></div>
+  <div class="chips" id="rsort" style="margin-top:10px"></div>
+  <div class="chips" id="rcat" style="margin-top:-6px"></div>
+  <div id="rl"></div>
+</section>
+
+<section id="s-notes" class="scr">
+  <h1 style="font-size:24px;margin-bottom:12px">Notes</h1>
+  <div class="srch" style="margin-bottom:14px"><span data-i="search"></span><input id="ns" type="search" placeholder="Search notes"></div>
+  <div id="nl"></div>
+  <button class="fab" id="nn" data-i="plus" aria-label="New note"></button>
+</section>
+
+<section id="s-set" class="scr">
+  <h1 style="font-size:24px;margin-bottom:14px">Settings</h1>
+  <div class="card set"><b>Recording quality</b><div class="chips" id="sq" style="margin-top:8px"></div><p>Higher quality makes larger files. Applies to new recordings.</p></div>
+  <div class="card set"><b>Default category</b><div class="chips" id="sc" style="margin-top:8px"></div></div>
+  <div class="card set"><b>Privacy</b><p>Recordings and notes are stored only on this device, in the app's browser storage. Nothing is uploaded, and there is no transcription, translation or cloud backup.</p></div>
+  <div class="card set"><b>Microphone permission</b><p>Recording needs microphone permission and a secure page (HTTPS). If you blocked it, allow Microphone for this site or app in Android Settings, then reload. Inside a custom Android app the WebView must grant RECORD_AUDIO and handle the permission request.</p></div>
+  <div class="card set"><b>Data</b><p>Clearing deletes every recording, note and setting from this device.</p><button class="sec dng" id="clr" style="margin-top:8px">Clear all local data</button></div>
+  <div class="card set"><b>Voice Notes &amp; Recorder</b><p>Version 1.0.0</p></div>
+</section>
+</main>
+<nav>
+  <button data-s="home" class="on"><span data-i="home"></span>Home</button>
+  <button data-s="rec"><span data-i="bars"></span>Recordings</button>
+  <button data-s="notes"><span data-i="note"></span>Notes</button>
+  <button data-s="set"><span data-i="gear"></span>Settings</button>
+</nav>
+</div>
+
+<div id="ne" hidden>
+  <div class="eb">
+    <button class="ib" id="eback" data-i="back" aria-label="Back"></button><span style="flex:1"></span>
+    <button class="ib" id="epin" data-i="pin" aria-label="Pin"></button>
+    <button class="ib" id="ecp" data-i="copy" aria-label="Copy text"></button>
+    <button class="ib" id="esh" data-i="share" aria-label="Share"></button>
+    <button class="ib" id="eex" data-i="download" aria-label="Export as .txt"></button>
+    <button class="ib" id="edl" data-i="trash" aria-label="Delete note"></button>
+  </div>
+  <input id="nt" placeholder="Title" maxlength="120">
+  <textarea id="nb" placeholder="Start writing…"></textarea>
+  <div class="ef"><span id="es">Saved</span><span style="flex:1"></span><label>Reminder date <input type="datetime-local" id="erm"></label><span style="width:100%">The date is saved with the note. No alert is sent.</span></div>
+</div>
+
+<div class="mod" id="sr" hidden><div>
+  <h3>Save recording</h3><p id="sri" style="color:var(--m);margin:2px 0"></p>
+  <input class="in" id="srt" maxlength="80" placeholder="Recording name">
+  <div class="chips" id="src"></div>
+  <div class="two"><button class="sec dng" id="srx">Discard</button><button class="pri" id="srs">Save</button></div>
+</div></div>
+
+<div class="mod" id="md" hidden style="z-index:50"><div>
+  <h3 id="mdt"></h3><input class="in" id="mdi" maxlength="80">
+  <div class="two" style="margin-top:12px"><button class="sec" id="mdn">Cancel</button><button class="pri" id="mdy">OK</button></div>
+</div></div>
+
+<div id="toast" role="status"></div>
+
+<script>setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('out')},3500)</script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),Q=s=>[...document.querySelectorAll(s)];
+const IC={mic:'M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zM19 11a7 7 0 0 1-14 0M12 18v4',pause:'M8 5v14M16 5v14',stop:'M6 6h12v12H6z',play:'M7 4l13 8-13 8z',bars:'M3 12h2M7 8v8M11 4v16M15 8v8M19 10v4',note:'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6',home:'M3 11l9-8 9 8M5 10v10h14V10',gear:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',star:'M12 2l3 6.9 7.5.6-5.7 4.9 1.8 7.3L12 17.8l-6.6 3.9 1.8-7.3L1.5 9.5 9 8.9z',trash:'M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 11v6M14 11v6',edit:'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',download:'M12 3v12M7 10l5 5 5-5M4 20h16',share:'M4 12v8h16v-8M12 16V3M7 8l5-5 5 5',copy:'M9 9h11v11H9zM5 15H4V4h11v1',pin:'M12 17v5M5 17h14l-2-7V4h1V2H6v2h1v6z',plus:'M12 5v14M5 12h14',back:'M15 18l-6-6 6-6',search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3'};
+const ic=(n,z=22)=>`<svg viewBox="0 0 24 24" width="${z}" height="${z}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[n]}"/></svg>`;
+Q('[data-i]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.i,+e.dataset.s||22)));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3200)}
+const CATS=['Personal','Study','Meetings','Ideas','Other'];
+let P={br:128,cat:'Personal',rate:1};try{Object.assign(P,JSON.parse(localStorage.getItem('vn')||'{}'))}catch(e){}
+const sp=()=>{try{localStorage.setItem('vn',JSON.stringify(P))}catch(e){}};
+const fdur=s=>{s=Math.round(s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const fsz=b=>b>1e6?(b/1e6).toFixed(1)+' MB':Math.max(1,Math.round(b/1e3))+' KB';
+const fdt=d=>new Date(d).toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function chips(el,items,sel,fn){el.innerHTML=items.map(i=>`<button class="chip ${String(i[0])===String(sel)?'on':''}" data-v="${i[0]}">${i[1]}</button>`).join('');el.onclick=e=>{const b=e.target.closest('[data-v]');if(b){fn(b.dataset.v);chips(el,items,b.dataset.v,fn)}}}
+
+/* ---------- dialogs (no native confirm/prompt: they fail in WebViews) ---------- */
+function dlg(title,o={}){return new Promise(r=>{$('mdt').textContent=title;const i=$('mdi');i.hidden=!o.input;i.value=o.value||'';$('mdy').textContent=o.ok||'OK';$('md').hidden=false;if(o.input)setTimeout(()=>i.focus(),80);
+  const done=v=>{$('md').hidden=true;r(v)};$('mdy').onclick=()=>done(o.input?i.value.trim()||null:true);$('mdn').onclick=()=>done(o.input?null:false)})}
+const ask=(t,ok)=>dlg(t,{ok});
+
+/* ---------- storage (IndexedDB) ---------- */
+const DB=()=>new Promise((res,rej)=>{if(!window.indexedDB)return rej();const r=indexedDB.open('voicenotes',1);r.onupgradeneeded=()=>{r.result.createObjectStore('rec',{keyPath:'id'});r.result.createObjectStore('note',{keyPath:'id'})};r.onsuccess=()=>res(r.result);r.onerror=r.onblocked=()=>rej(r.error)});
+let dbp;const db=()=>dbp||(dbp=DB());
+async function tx(st,mode,fn){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(st,mode),q=fn(t.objectStore(st));t.oncomplete=()=>res(q&&q.result);t.onerror=t.onabort=()=>rej(t.error)})}
+let R=[],N=[],dbOk=true;
+async function load(){try{R=await tx('rec','readonly',s=>s.getAll())||[];N=await tx('note','readonly',s=>s.getAll())||[];dbOk=true}catch(e){dbOk=false}renderAll()}
+
+/* ---------- navigation ---------- */
+function show(n){Q('.scr').forEach(s=>s.classList.toggle('on',s.id==='s-'+n));Q('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===n));renderAll()}
+Q('nav button').forEach(b=>b.onclick=()=>show(b.dataset.s));
+$('qb').onclick=()=>show('rec');$('qn').onclick=()=>newNote();$('nn').onclick=()=>newNote();
+
+/* ---------- recording ---------- */
+let mr,chunks=[],stream,actx,an,raf,t0=0,acc=0,state='idle',mime='',lv=new Array(44).fill(0),pendingBlob=null,discard=false,lastSec=-1;
+const el=()=>acc+(state==='rec'?Date.now()-t0:0);
+function micMsg(e){const n=e&&e.name;return n==='NotAllowedError'||n==='SecurityError'?'Microphone access was denied. Allow Microphone for this site or app in Android settings, then try again.':n==='NotFoundError'?'No microphone was found on this device.':n==='NotReadableError'?'The microphone is in use by another app.':'Could not start the microphone.'}
+function setSt(m){$('st').textContent=m}
+function recUI(){const on=state!=='idle';$('br').className='rb'+(state==='rec'?' on':'');$('br').innerHTML=ic(on?'stop':'mic',34);$('br').setAttribute('aria-label',on?'Stop and save':'Record');
+  $('bp').disabled=$('bd').disabled=!on;$('bp').innerHTML=ic(state==='pause'?'play':'pause');$('bp').setAttribute('aria-label',state==='pause'?'Resume':'Pause');
+  setSt(state==='rec'?'Recording…':state==='pause'?'Paused':'Tap the red button to start recording')}
+async function startRec(){
+  if(state!=='idle')return;
+  if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return toast('Recording needs HTTPS or a WebView that allows microphone access.');
+  if(!window.MediaRecorder)return toast('This browser cannot record audio.');
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){return toast(micMsg(e))}
+  mime=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+  try{mr=new MediaRecorder(stream,Object.assign(mime?{mimeType:mime}:{},{audioBitsPerSecond:P.br*1000}))}catch(e){try{mr=new MediaRecorder(stream)}catch(x){stream.getTracks().forEach(t=>t.stop());return toast('Could not start recording on this device.')}}
+  chunks=[];discard=false;mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};mr.onstop=onStop;mr.onerror=()=>toast('Recording error. Please try again.');
+  try{actx=new(window.AudioContext||window.webkitAudioContext)();an=actx.createAnalyser();an.fftSize=512;actx.createMediaStreamSource(stream).connect(an)}catch(e){an=null}
+  mr.start(1000);state='rec';t0=Date.now();acc=0;lv.fill(0);recUI();loop()}
+function pauseRec(){if(state==='rec'){mr.pause();acc+=Date.now()-t0;state='pause'}else if(state==='pause'){mr.resume();t0=Date.now();state='rec'}recUI()}
+function stopRec(save){if(state==='idle')return;if(state==='rec')acc+=Date.now()-t0;discard=!save;state='idle';try{mr.stop()}catch(e){onStop()}stream.getTracks().forEach(t=>t.stop());if(actx)actx.close().catch(()=>{});cancelAnimationFrame(raf);recUI();$('tm').textContent='00:00';drawWave()}
+$('br').onclick=()=>state==='idle'?startRec():stopRec(true);
+$('bp').onclick=pauseRec;
+$('bd').onclick=async()=>{if(await ask('Discard this recording?','Discard'))stopRec(false)};
+$('qr').onclick=()=>{show('home');startRec()};
+let durS=0;
+function onStop(){if(discard){chunks=[];return}const type=mr.mimeType||mime||'audio/webm';const b=new Blob(chunks,{type});chunks=[];durS=acc/1000;
+  if(!b.size)return toast('Nothing was recorded. Please try again.');pendingBlob=b;
+  $('srt').value='Recording '+fdt(Date.now());$('sri').textContent=`${fdur(durS)} · ${fsz(b.size)} · ${type.split(';')[0]}`;chips($('src'),CATS.map(c=>[c,c]),P.cat,v=>P.cat=v);$('sr').hidden=false}
+$('srs').onclick=async()=>{const r={id:'r'+Date.now(),title:$('srt').value.trim()||'Recording',date:Date.now(),dur:durS,cat:P.cat,fav:0,size:pendingBlob.size,mime:pendingBlob.type,blob:pendingBlob};
+  try{await tx('rec','readwrite',s=>s.put(r));R.push(r);pendingBlob=null;$('sr').hidden=true;toast('Recording saved');renderAll()}catch(e){toast('Could not save. Storage may be full or unavailable.')}};
+$('srx').onclick=async()=>{if(await ask('Discard this recording? It cannot be recovered.','Discard')){pendingBlob=null;$('sr').hidden=true}};
+function loop(){raf=requestAnimationFrame(loop);if(state==='rec'&&an){const d=new Uint8Array(an.fftSize);an.getByteTimeDomainData(d);let m=0;for(const v of d)m=Math.max(m,Math.abs(v-128));lv.push(Math.min(1,m/90));lv.shift()}
+  const s=Math.floor(el()/1000);if(s!==lastSec){lastSec=s;$('tm').textContent=fdur(s)}drawWave()}
+function drawWave(){const c=$('wv'),k=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w)return;if(c.width!==Math.round(w*k)){c.width=Math.round(w*k);c.height=Math.round(h*k)}
+  const x=c.getContext('2d');x.setTransform(k,0,0,k,0,0);x.clearRect(0,0,w,h);const n=lv.length,g=w/n;x.fillStyle=state==='rec'?'#E45B4A':'#d8ccc6';
+  lv.forEach((v,i)=>{const bh=Math.max(3,v*h);x.beginPath();x.roundRect?x.roundRect(i*g+g*.2,(h-bh)/2,g*.6,bh,g*.3):x.rect(i*g+g*.2,(h-bh)/2,g*.6,bh);x.fill()})}
+addEventListener('resize',drawWave);
+addEventListener('beforeunload',e=>{if(state!=='idle'||pendingBlob){e.preventDefault();e.returnValue=''}});
+
+/* ---------- recordings list + playback ---------- */
+let rq='',rsort='new',rcat='all',hq='',nq='';
+const aud=new Audio();let cur=null,curUrl=null;
+function recCard(r){const pl=cur===r.id&&!aud.paused;return `<div class="rc" data-id="${r.id}"><div class="rt"><button class="pp" data-a="play" aria-label="Play or pause">${ic(pl?'pause':'play')}</button><div class="rm"><b>${esc(r.title)}</b><small>${fdt(r.date)} · ${fdur(r.dur)} · ${esc(r.cat)} · ${fsz(r.size)}</small></div></div><div class="pg"><i style="width:${cur===r.id&&r.dur?Math.min(100,aud.currentTime/r.dur*100):0}%"></i></div><div class="ra"><button data-a="spd" aria-label="Playback speed">${P.rate}×</button><button class="fv ${r.fav?'on':''}" data-a="fav" aria-label="Favorite">${ic('star')}</button><button data-a="ren" aria-label="Rename">${ic('edit')}</button><button data-a="dl" aria-label="Download">${ic('download')}</button>${navigator.canShare?`<button data-a="sh" aria-label="Share">${ic('share')}</button>`:''}<button data-a="del" aria-label="Delete">${ic('trash')}</button></div></div>`}
+const empty=(i,t,s)=>`<div class="emp">${ic(i,44)}<div style="font-weight:700;color:var(--t)">${t}</div>${s}</div>`;
+function recs(){let l=R.filter(r=>r.title.toLowerCase().includes(rq.toLowerCase())&&(rcat==='all'||(rcat==='fav'?r.fav:r.cat===rcat)));return l.sort((a,b)=>rsort==='new'?b.date-a.date:a.date-b.date)}
+function renderAll(){
+  chips($('rsort'),[['new','Newest'],['old','Oldest']],rsort,v=>{rsort=v;renderRecs()});
+  chips($('rcat'),[['all','All'],['fav','Favorites'],...CATS.map(c=>[c,c])],rcat,v=>{rcat=v;renderRecs()});
+  chips($('sq'),[[64,'Standard'],[128,'High'],[192,'Maximum']],P.br,v=>{P.br=+v;sp()});chips($('sc'),CATS.map(c=>[c,c]),P.cat,v=>{P.cat=v;sp()});
+  renderRecs();renderNotes();renderHome()}
+function renderRecs(){const l=recs();$('rl').innerHTML=!dbOk?empty('bars','Storage unavailable','This browser blocks local storage, so recordings cannot be saved or listed.'):l.length?l.map(recCard).join(''):R.length?empty('search','No matches','Try another search or category.'):empty('mic','No recordings yet','Record your first voice note from Home.')}
+function renderHome(){const q=hq.toLowerCase(),rl=q?R.filter(r=>r.title.toLowerCase().includes(q)):[...R].sort((a,b)=>b.date-a.date).slice(0,3);
+  $('hh').textContent=q?'Matching recordings':'Recent recordings';$('hl').innerHTML=rl.length?rl.map(recCard).join(''):empty('mic',q?'No matching recordings':'No recordings yet','Tap the red button to record.');
+  const nl=q?N.filter(n=>(n.title+n.body).toLowerCase().includes(q)):[];$('hn').innerHTML=q?'<h2>Matching notes</h2>'+(nl.length?nl.map(noteCard).join(''):'<div class="emp">No matching notes</div>'):'';
+  storage()}
+async function storage(){let t=R.reduce((a,r)=>a+r.size,0),h=`<b>Storage</b><p>${R.length} recording${R.length===1?'':'s'} · ${fsz(t)} · ${N.length} note${N.length===1?'':'s'}</p>`;
+  try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();if(e.quota)h+=`<p>Browser storage in use: ${fsz(e.usage)} of ${fsz(e.quota)} available</p>`}}catch(e){}$('stor').innerHTML=h}
+$('rs').oninput=e=>{rq=e.target.value;renderRecs()};$('hs').oninput=e=>{hq=e.target.value.trim();renderHome()};
+document.addEventListener('click',async e=>{const b=e.target.closest('.rc [data-a]');if(b){const id=b.closest('.rc').dataset.id,r=R.find(x=>x.id===id),a=b.dataset.a;if(!r)return;
+  if(a==='play')play(r);
+  if(a==='spd'){const L=[1,1.25,1.5,2,.75];P.rate=L[(L.indexOf(P.rate)+1)%L.length];sp();aud.playbackRate=P.rate;renderAll()}
+  if(a==='fav'){r.fav=r.fav?0:1;await put('rec',r);renderAll()}
+  if(a==='ren'){const v=await dlg('Rename recording',{input:1,value:r.title,ok:'Save'});if(v){r.title=v;await put('rec',r);renderAll()}}
+  if(a==='dl')download(r.blob,r.title+'.'+ext(r.mime));
+  if(a==='sh'){const f=new File([r.blob],r.title+'.'+ext(r.mime),{type:r.mime});if(navigator.canShare({files:[f]}))navigator.share({files:[f],title:r.title}).catch(()=>{});else toast('Sharing files is not supported here. Use download.')}
+  if(a==='del'&&await ask(`Delete "${r.title}"? This cannot be undone.`,'Delete')){if(cur===id){aud.pause();cur=null}try{await tx('rec','readwrite',s=>s.delete(id));R=R.filter(x=>x.id!==id);renderAll();toast('Recording deleted')}catch(x){toast('Could not delete the recording.')}}}});
+const ext=m=>/mp4/.test(m)?'m4a':/ogg/.test(m)?'ogg':'webm';
+async function put(st,o){try{await tx(st,'readwrite',s=>s.put(o))}catch(e){toast('Could not save changes.')}}
+function download(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name.replace(/[\\/:*?"<>|]/g,'_');document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function play(r){if(cur===r.id){aud.paused?aud.play().catch(()=>toast('Playback failed.')):aud.pause();return}
+  if(curUrl)URL.revokeObjectURL(curUrl);cur=r.id;curUrl=URL.createObjectURL(r.blob);aud.src=curUrl;aud.playbackRate=P.rate;aud.play().catch(()=>toast('This recording could not be played on this device.'));renderAll()}
+['play','pause','ended'].forEach(v=>aud.addEventListener(v,()=>{if(v==='ended'){cur=null}renderAll()}));
+aud.addEventListener('timeupdate',()=>{const r=R.find(x=>x.id===cur);if(!r||!r.dur)return;Q(`.rc[data-id="${cur}"] .pg i`).forEach(i=>i.style.width=Math.min(100,aud.currentTime/r.dur*100)+'%')});
+aud.addEventListener('error',()=>{if(cur)toast('This recording could not be played.')});
+
+/* ---------- notes ---------- */
+let cn=null,tm,isNew=false;
+const noteCard=n=>`<button class="nc" data-n="${n.id}"><b>${n.pin?ic('pin',15):''}${esc(n.title||'Untitled')}</b><p>${esc(n.body.slice(0,200))||'No text'}</p><small>${fdt(n.upd)}${n.rem?' · Reminder '+fdt(n.rem):''}</small></button>`;
+function renderNotes(){const q=nq.toLowerCase(),l=N.filter(n=>(n.title+n.body).toLowerCase().includes(q)).sort((a,b)=>(b.pin||0)-(a.pin||0)||b.upd-a.upd);
+  $('nl').innerHTML=!dbOk?empty('note','Storage unavailable','Notes cannot be saved in this browser.'):l.length?l.map(noteCard).join(''):N.length?empty('search','No matching notes',''):empty('note','No notes yet','Tap + to write your first note.')}
+$('ns').oninput=e=>{nq=e.target.value;renderNotes()};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(b)openNote(N.find(n=>n.id===b.dataset.n))});
+function newNote(){isNew=true;openNote({id:'n'+Date.now(),title:'',body:'',pin:0,upd:Date.now(),rem:''},true)}
+function openNote(n,fresh){if(!n)return;cn=n;isNew=!!fresh;$('nt').value=n.title;$('nb').value=n.body;$('erm').value=n.rem||'';$('es').textContent=fresh?'New note':'Saved';$('epin').classList.toggle('on',!!n.pin);$('ne').hidden=false;if(fresh)$('nb').focus()}
+function edited(){if(!cn)return;cn.title=$('nt').value;cn.body=$('nb').value;cn.rem=$('erm').value;$('es').textContent='Saving…';clearTimeout(tm);tm=setTimeout(saveNote,500)}
+['nt','nb','erm'].forEach(i=>$(i).addEventListener('input',edited));$('erm').addEventListener('change',edited);
+async function saveNote(){clearTimeout(tm);if(!cn)return;if(!cn.title.trim()&&!cn.body.trim()){$('es').textContent='Empty notes are not saved';return}
+  cn.upd=Date.now();try{await tx('note','readwrite',s=>s.put(cn));if(!N.includes(cn)){const i=N.findIndex(x=>x.id===cn.id);i<0?N.push(cn):N[i]=cn}$('es').textContent='Saved';isNew=false}catch(e){$('es').textContent='Could not save';toast('Could not save this note.')}}
+async function closeNote(){await saveNote();$('ne').hidden=true;cn=null;renderAll()}
+$('eback').onclick=closeNote;
+$('epin').onclick=()=>{cn.pin=cn.pin?0:1;$('epin').classList.toggle('on',!!cn.pin);edited()};
+const ntext=()=>(cn.title?cn.title+'\n\n':'')+cn.body;
+$('ecp').onclick=async()=>{try{await navigator.clipboard.writeText(ntext())}catch(e){const t=$('nb');t.select();document.execCommand('copy')}toast('Note copied')};
+$('esh').onclick=()=>{if(navigator.share)navigator.share({title:cn.title||'Note',text:ntext()}).catch(()=>{});else toast('Sharing is not supported here. Use copy or export.')};
+$('eex').onclick=()=>{if(!ntext().trim())return toast('Write something first.');download(new Blob([ntext()],{type:'text/plain'}),(cn.title||'note')+'.txt')};
+$('edl').onclick=async()=>{if(!await ask('Delete this note? This cannot be undone.','Delete'))return;clearTimeout(tm);try{await tx('note','readwrite',s=>s.delete(cn.id));N=N.filter(n=>n.id!==cn.id)}catch(e){}$('ne').hidden=true;cn=null;renderAll();toast('Note deleted')};
+addEventListener('pagehide',()=>{if(cn)saveNote()});
+
+/* ---------- clear data ---------- */
+$('clr').onclick=async()=>{if(!await ask('Delete ALL recordings, notes and settings from this device?','Delete all'))return;aud.pause();cur=null;try{await tx('rec','readwrite',s=>s.clear());await tx('note','readwrite',s=>s.clear())}catch(e){}try{localStorage.removeItem('vn')}catch(e){}P={br:128,cat:'Personal',rate:1};R=[];N=[];renderAll();toast('All local data cleared')};
+
+/* ---------- init + splash ---------- */
+recUI();drawWave();
+Promise.all([new Promise(r=>setTimeout(r,2000)),Promise.race([load(),new Promise(r=>setTimeout(r,1500))])]).then(()=>{$('splash').classList.add('out');setTimeout(()=>$('splash').remove(),700)});
+</script>
+</body>
+</html>
